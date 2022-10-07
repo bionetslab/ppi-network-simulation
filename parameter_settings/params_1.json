@@ -1,0 +1,16 @@
+{
+        "num_proteins": 20000,
+        "num_ppis_ground_truth": 1000000,
+        "false_positive_rate": 0.2,
+        "false_negative_rate": 0.1,
+        "seed": null,
+        "generator": "erdos-renyi",
+        "biased": true,
+        "baseline_degree": 1,
+        "test_method": "AP-MS",
+        "matrix_size": 100,
+        "acceptance_threshold": 0,
+        "max_num_tests": 100,
+        "max_num_ppis_observed": 500000,
+        "degree_inspection_interval": 10
+}
