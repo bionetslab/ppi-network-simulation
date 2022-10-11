@@ -28,7 +28,12 @@ def sample_protein_pairs(adj_observed: np.ndarray, parameters: Parameters, rng: 
         p = np.full(num_proteins, 1 / num_proteins)
     if parameters.test_method.upper() == 'AP-MS':
         bait = rng.choice(num_proteins, p=p)
-        pairs = [(bait, prey) for prey in range(num_proteins) if prey != bait]
+        if parameters.star_size is None:
+            pairs = [(bait, prey) for prey in range(num_proteins) if prey != bait]
+        else:
+            possible_preys = [prey for prey in range(num_proteins) if prey != bait]
+            preys = rng.choice(possible_preys, size=min(num_proteins - 1, parameters.star_size), replace=False)
+            pairs = [(bait, prey) for prey in preys]
     elif parameters.test_method.upper() == 'Y2H':
         proteins = rng.choice(num_proteins, size=parameters.matrix_size, replace=False, p=p)
         pairs = list(combinations(proteins, 2))

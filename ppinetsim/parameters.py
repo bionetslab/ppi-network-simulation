@@ -27,6 +27,9 @@ class Parameters(object):
       Choices: 'AP-MS', 'Y2H'. Specifies sampling strategy for protein pairs to be tested for interaction. If set to
       'AP-MS', one bait protein is sampled and then tested against all other proteins. If set to 'Y2H', ``matrix_size``
       many proteins are randomly sampled and all unordered pairs are tested for interaction.
+    star_size : `str` or None
+      Specifies number of proteins to be sampled for pairwise testing against the bait protein if ``test_method`` is set
+       to 'AP-MS'. If set to `None`, all proteins are tested as preys. Must be >=1.
     matrix_size : `int`
       Specifies number of proteins to be sampled for pairwise testing if ``test_method`` is set to 'Y2H'. Must be >=2.
     acceptance_threshold : `float`
@@ -66,6 +69,7 @@ class Parameters(object):
         self.baseline_degree = float(data.get('baseline_degree', 1.0))
         self.test_method = data.get('test_method', 'AP-MS')
         self.matrix_size = int(data.get('matrix_size', 2))
+        self.star_size = int(data.get('star_size', None))
         self.acceptance_threshold = float(data.get('acceptance_threshold', 0.0))
         self.max_num_tests = int(data.get('max_num_tests', 1000))
         self.max_num_ppis_observed = int(data.get('max_num_ppis_observed', 500000))
