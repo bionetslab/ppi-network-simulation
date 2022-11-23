@@ -16,8 +16,8 @@ def run_simulation(parameters: Parameters, verbose=False):
 
     Returns
     -------
-    degree_distribution : numpy.ndarray
-      2D array of degree distributions of observed PPI network at different snapshots during simulation. Rows correspond
+    node_degrees : numpy.ndarray
+      2D array of node degrees in observed PPI network at different snapshots during simulation. Rows correspond
       to the snapshots, columns to proteins.
     num_ppis : numpy.ndarray
       1D array of numbers of PPIs in observed PPI network at different snapshots during simulation. Rows correspond to
@@ -25,7 +25,7 @@ def run_simulation(parameters: Parameters, verbose=False):
     """
     adj_ground_truth, adj_observed, num_tests, num_positive_tests = utils.initialize_matrices(parameters)
     rng = np.random.default_rng(parameters.seed)
-    degree_distributions = []
+    node_degrees = []
     num_ppis = []
     if verbose:
         bar = Bar('Simulation round', max=parameters.max_num_tests)
@@ -35,7 +35,7 @@ def run_simulation(parameters: Parameters, verbose=False):
         utils.update_observed_ppi_network(protein_pairs, num_tests, num_positive_tests, adj_observed, parameters)
         early_exit = utils.num_edges(adj_observed) >= parameters.max_num_ppis_observed
         if early_exit or i == parameters.max_num_tests - 1 or i % parameters.degree_inspection_interval == 0:
-            degree_distributions.append(utils.degree_distribution(adj_observed))
+            node_degrees.append(utils.node_degrees(adj_observed))
             num_ppis.append(utils.num_edges(adj_observed))
         if verbose:
             bar.next()
@@ -43,6 +43,6 @@ def run_simulation(parameters: Parameters, verbose=False):
             break
     if verbose:
         bar.finish()
-    degree_distributions = np.array(degree_distributions)
+    node_degrees = np.array(node_degrees)
     num_ppis = np.array(num_ppis)
-    return degree_distributions, num_ppis
+    return node_degrees, num_ppis

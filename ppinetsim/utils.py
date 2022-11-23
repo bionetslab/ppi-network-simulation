@@ -22,7 +22,7 @@ def initialize_matrices(parameters: Parameters):
 def sample_protein_pairs(adj_observed: np.ndarray, parameters: Parameters, rng: np.random.Generator):
     num_proteins = adj_observed.shape[0]
     if parameters.biased:
-        p = degree_distribution(adj_observed, dtype=float) + parameters.baseline_degree
+        p = node_degrees(adj_observed, dtype=float) + parameters.baseline_degree
         p = p / p.sum()
     else:
         p = np.full(num_proteins, 1 / num_proteins)
@@ -67,9 +67,19 @@ def update_observed_ppi_network(protein_pairs: list, num_tests: np.ndarray, num_
         adj_observed[v, u] = is_edge
 
 
-def degree_distribution(adj, dtype=None):
+def node_degrees(adj: np.ndarray, dtype=None):
     return np.squeeze(np.asarray(adj.sum(axis=0), dtype=dtype))
 
 
-def num_edges(adj):
+def num_edges(adj: np.ndarray):
     return int(adj.sum())
+
+
+def degrees_to_frequencies(node_degrees: np.ndarray, dtype=None):
+    return np.asarray(np.unique(node_degrees, return_counts=True), dtype=dtype)
+
+
+def degrees_to_distribution(node_degrees: np.ndarray):
+    freqs = degrees_to_frequencies(node_degrees, dtype=float)
+    freqs[1, ] /= freqs[1, ].sum()
+    return freqs

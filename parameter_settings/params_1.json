@@ -8,7 +8,7 @@
         "biased": true,
         "baseline_degree": 1,
         "test_method": "AP-MS",
-        "star_size": 100,
+        "star_size": 1000,
         "matrix_size": 100,
         "acceptance_threshold": 0,
         "max_num_tests": 100,
