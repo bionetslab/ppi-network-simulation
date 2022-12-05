@@ -4,7 +4,7 @@ import numpy as np
 from progress.bar import Bar
 
 
-def run_simulation(parameters: Parameters, verbose=False):
+def run_simulation(parameters: Parameters, verbose=True):
     """Runs the simulation.
 
     Parameters
@@ -24,25 +24,19 @@ def run_simulation(parameters: Parameters, verbose=False):
       the same snapshots as rows in ``degree_distribution``.
     """
     adj_ground_truth, adj_observed, num_tests, num_positive_tests = utils.initialize_matrices(parameters)
-    rng = np.random.default_rng(parameters.seed)
-    node_degrees = []
-    num_ppis = []
+    rng = np.random.default_rng()
     if verbose:
-        bar = Bar('Simulation round', max=parameters.max_num_tests)
-    for i in range(parameters.max_num_tests):
-        protein_pairs = utils.sample_protein_pairs(adj_observed, parameters, rng)
+        bar = Bar('Simulation round', max=parameters.num_studies)
+    for i in range(parameters.num_studies):
+        protein_pairs = utils.sample_protein_pairs(adj_observed, parameters, rng, i)
         utils.test_protein_pairs(protein_pairs, adj_ground_truth, num_tests, num_positive_tests, parameters, rng)
         utils.update_observed_ppi_network(protein_pairs, num_tests, num_positive_tests, adj_observed, parameters)
-        early_exit = utils.num_edges(adj_observed) >= parameters.max_num_ppis_observed
-        if early_exit or i == parameters.max_num_tests - 1 or i % parameters.degree_inspection_interval == 0:
-            node_degrees.append(utils.node_degrees(adj_observed))
-            num_ppis.append(utils.num_edges(adj_observed))
         if verbose:
             bar.next()
-        if early_exit:
-            break
     if verbose:
         bar.finish()
-    node_degrees = np.array(node_degrees)
-    num_ppis = np.array(num_ppis)
-    return node_degrees, num_ppis
+    node_degrees_observed = utils.node_degrees(adj_observed)
+    num_ppis_observed = utils.num_edges(adj_observed)
+    node_degrees_ground_truth = utils.node_degrees(adj_ground_truth)
+    num_ppis_ground_truth = utils.num_edges(adj_ground_truth)
+    return node_degrees_observed, num_ppis_observed, node_degrees_ground_truth, num_ppis_ground_truth

@@ -8,10 +8,8 @@
         "biased": true,
         "baseline_degree": 1,
         "test_method": "AP-MS",
-        "star_size": 1000,
-        "matrix_size": 100,
+        "num_baits": 3,
+        "num_preys": 100,
         "acceptance_threshold": 0,
-        "max_num_tests": 100,
-        "max_num_ppis_observed": 500000,
-        "degree_inspection_interval": 10
+        "num_studies": 100
 }

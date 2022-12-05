@@ -1,6 +1,5 @@
 import networkx as nx
 import numpy as np
-from itertools import combinations
 from ppinetsim.parameters import Parameters
 
 
@@ -9,7 +8,7 @@ def initialize_matrices(parameters: Parameters):
         graph = nx.gnm_random_graph(parameters.num_proteins, parameters.num_ppis_ground_truth, seed=parameters.seed)
     elif parameters.generator.lower() == 'barabasi-albert':
         m = np.max([1, round(parameters.num_proteins / 2.0 - np.sqrt((parameters.num_proteins * parameters.num_proteins) / 4.0 - parameters.num_ppis_ground_truth))])
-        graph = nx.barabasi_albert_graph(parameters.num_proteins, m, seed=parameters.seed, initial_graph=None)
+        graph = nx.barabasi_albert_graph(parameters.num_proteins, m, seed=parameters.seed)
     else:
         raise ValueError(f'Invalid generator name {parameters.generator}. Valid choices: "erdos-renyi", "barabasi-albert".')
     adj_ground_truth = nx.to_numpy_array(graph, dtype=bool)
@@ -19,26 +18,27 @@ def initialize_matrices(parameters: Parameters):
     return adj_ground_truth, adj_observed, num_tests, num_positive_tests
 
 
-def sample_protein_pairs(adj_observed: np.ndarray, parameters: Parameters, rng: np.random.Generator):
+def sample_protein_pairs(adj_observed: np.ndarray, parameters: Parameters, rng: np.random.Generator, i: int):
     num_proteins = adj_observed.shape[0]
     if parameters.biased:
         p = node_degrees(adj_observed, dtype=float) + parameters.baseline_degree
         p = p / p.sum()
     else:
         p = np.full(num_proteins, 1 / num_proteins)
+    if parameters.sample_studies:
+        num_preys = parameters.num_preys[i]
+        num_baits = parameters.num_baits[i]
+    else:
+        num_preys = rng.integers(1, parameters.num_preys + 1)
+        num_baits = rng.integers(1, parameters.num_baits + 1)
+    baits = rng.choice(num_proteins, size=num_baits, replace=False, p=p)
     if parameters.test_method.upper() == 'AP-MS':
-        bait = rng.choice(num_proteins, p=p)
-        if parameters.star_size is None:
-            pairs = [(bait, prey) for prey in range(num_proteins) if prey != bait]
-        else:
-            possible_preys = [prey for prey in range(num_proteins) if prey != bait]
-            preys = rng.choice(possible_preys, size=min(num_proteins - 1, parameters.star_size), replace=False)
-            pairs = [(bait, prey) for prey in preys]
+        preys = rng.choice(num_proteins, size=num_preys, replace=False)
     elif parameters.test_method.upper() == 'Y2H':
-        proteins = rng.choice(num_proteins, size=parameters.matrix_size, replace=False, p=p)
-        pairs = list(combinations(proteins, 2))
+        preys = rng.choice(num_proteins, size=num_preys, replace=False, p=p)
     else:
         raise ValueError(f'Invalid test method name {parameters.test_method}. Valid choices: "AP-MS", "Y2H".')
+    pairs = [(bait, prey) for bait in baits for prey in preys if bait != prey]
     return pairs
 
 

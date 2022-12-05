@@ -69,7 +69,7 @@ def calculate_final_degree_ground_truth(f,adj_ground_truth,parameters,pl_num,t,d
   np.savetxt(dir_output + 'degree_dist_file/'+'degree_ground_truth_'+str(i)+'_'+str(f.replace('.json',''))+'.txt', degree_ground_truth, delimiter='\n')
   r = callPoweRlaw(degree_ground_truth, pl_num,t)
   r.append('groundtruth_'+f)
-  final_vector = [parameters.num_proteins,parameters.num_ppis_ground_truth,parameters.false_positive_rate,parameters.false_negative_rate,parameters.generator,parameters.biased,parameters.baseline_degree,parameters.test_method, parameters.star_size,parameters.star_size_constant,parameters.matrix_size, parameters.matrix_size_constant,parameters.acceptance_threshold,parameters.max_num_tests,parameters.max_num_ppis_observed,utils.num_edges(adj_ground_truth)/2,len(degree_ground_truth),i]
+  final_vector = [parameters.num_proteins, parameters.num_ppis_ground_truth, parameters.false_positive_rate, parameters.false_negative_rate, parameters.generator, parameters.biased, parameters.baseline_degree, parameters.test_method, parameters.num_baits, parameters.star_size_constant, parameters.num_preys, parameters.matrix_size_constant, parameters.acceptance_threshold, parameters.num_studies, parameters.max_num_ppis_observed, utils.num_edges(adj_ground_truth) / 2, len(degree_ground_truth), i]
   for j in r:
     final_vector.append(j)
   return final_vector
@@ -108,7 +108,7 @@ def run_iterations(files,n,dir_parameters,pl_num,t,dir_output,name_file):
       r = callPoweRlaw(degree_distribution,pl_num,t)
       r.append(f)
   
-      final_vector = [parameters.num_proteins,parameters.num_ppis_ground_truth,parameters.false_positive_rate,parameters.false_negative_rate,parameters.generator,parameters.biased,parameters.baseline_degree,parameters.test_method, parameters.star_size,parameters.matrix_size, parameters.acceptance_threshold,parameters.max_num_tests,parameters.max_num_ppis_observed,num_ppis[-1]/2,len(degree_distribution)]
+      final_vector = [parameters.num_proteins, parameters.num_ppis_ground_truth, parameters.false_positive_rate, parameters.false_negative_rate, parameters.generator, parameters.biased, parameters.baseline_degree, parameters.test_method, parameters.num_baits, parameters.num_preys, parameters.acceptance_threshold, parameters.num_studies, parameters.max_num_ppis_observed, num_ppis[-1] / 2, len(degree_distribution)]
       for j in r:
         final_vector.append(j)
       final_table.append(final_vector)
@@ -142,7 +142,7 @@ def fun(parameters,f,pl_num,t,final_table,i,dir_output):
   #np.savetxt(dir_output + 'degree_dist_file/'+'degree_observed_'+str(i)+'_'+ str(f.replace('.json','')) +'.txt', degree_distribution, delimiter='\n')
   r = callPoweRlaw(degree_distribution,pl_num,t)
   r.append(f)
-  final_vector = [parameters.num_proteins,parameters.num_ppis_ground_truth,parameters.false_positive_rate,parameters.false_negative_rate,parameters.generator,parameters.biased,parameters.baseline_degree,parameters.test_method, parameters.star_size,parameters.star_size_constant,parameters.matrix_size, parameters.matrix_size_constant,parameters.acceptance_threshold,parameters.max_num_tests,parameters.max_num_ppis_observed,num_ppis[-1]/2,len(degree_distribution),i]
+  final_vector = [parameters.num_proteins, parameters.num_ppis_ground_truth, parameters.false_positive_rate, parameters.false_negative_rate, parameters.generator, parameters.biased, parameters.baseline_degree, parameters.test_method, parameters.num_baits, parameters.star_size_constant, parameters.num_preys, parameters.matrix_size_constant, parameters.acceptance_threshold, parameters.num_studies, parameters.max_num_ppis_observed, num_ppis[-1] / 2, len(degree_distribution), i]
   for j in r:
     final_vector.append(j)
   final_table.append(final_vector)
