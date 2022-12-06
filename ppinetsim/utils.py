@@ -75,11 +75,11 @@ def num_edges(adj: np.ndarray):
     return int(adj.sum())
 
 
-def degrees_to_frequencies(node_degrees: np.ndarray, dtype=None):
+def degrees_to_frequencies(node_degrees: np.ndarray, dtype=float):
     return np.asarray(np.unique(node_degrees, return_counts=True), dtype=dtype)
 
 
 def degrees_to_distribution(node_degrees: np.ndarray):
-    freqs = degrees_to_frequencies(node_degrees, dtype=float)
+    freqs = degrees_to_frequencies(node_degrees)
     freqs[1, ] /= freqs[1, ].sum()
     return freqs

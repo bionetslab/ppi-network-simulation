@@ -31,15 +31,21 @@ class Parameters(object):
       'AP-MS', one bait protein is sampled and then tested against all other proteins. If set to 'Y2H', ``matrix_size``
       many proteins are randomly sampled and all unordered pairs are tested for interaction.
     num_baits : `str` or None
-      Specifies number of proteins to be sampled for pairwise testing against the bait protein if ``test_method`` is set
-       to 'AP-MS'. If set to `None`, all proteins are tested as preys. Must be >=1.
+      Specifies maximum number of baits. If set to `None`, numbers of baits are sampled from real-world studies.
     num_preys : `int`
-      Specifies number of proteins to be sampled for pairwise testing if ``test_method`` is set to 'Y2H'. Must be >=2.
+      Specifies maximum number of preys. If set to `None`, numbers of preys are sampled from real-world studies.
     acceptance_threshold : `float`
       Specifies lower bound on ratio of positive tests among all tests necessary for an edge to appear in the observed
       PPI network. If set to 0, one positive test is enough to ensure inclusion. Range: [0,1).
     num_studies : `int`
-      Specifies maximum number of test rounds to be carried out during simulation.
+      Specifies maximum number of test rounds to be carried out during simulation. Automatically set to number of all
+      real-world studies if set to value <= 0.
+    sample_studies : `bool`
+      If True, numbers of baits and preys are sampled from real-world studies.
+    sampled_studies : `list`
+      If non-empty, numbers of baits and preys are sampled from provided list of studies.
+    only_large_studies : `bool`
+      If True, only studies with >= 200 PPIs are used for sampling numbers of baits and preys.
     """
 
     def __init__(self, path_to_json: Optional[str] = None):
@@ -65,20 +71,24 @@ class Parameters(object):
         self.biased = bool(data.get('biased', True))
         self.baseline_degree = float(data.get('baseline_degree', 1.0))
         self.test_method = data.get('test_method', 'AP-MS')
-        self.num_preys = int(data.get('num_preys', None))
-        self.num_baits = int(data.get('num_baits', None))
+        self.num_preys = data.get('num_preys', None)
+        self.num_baits = data.get('num_baits', None)
         self.acceptance_threshold = float(data.get('acceptance_threshold', 0.0))
         self.num_studies = int(data.get('num_studies', 1000))
         self.sample_studies = bool(data.get('sample_studies', False))
         self.sampled_studies = data.get('sampled_studies', [])
         self.sample_studies = self.sample_studies or (self.num_preys is None or self.num_baits is None)
         self.sample_studies = self.sample_studies or (len(self.sampled_studies) > 0)
+        self.only_big_studies = bool(data.get('only_big_studies', True))
         if self.sample_studies:
-            filename = join('ppinetsim', 'data', self.test_method, 'num_baits_preys.csv')
+            if self.only_big_studies:
+                filename = join('ppinetsim', 'data', self.test_method, 'num_baits_preys_200.csv')
+            else:
+                filename = join('ppinetsim', 'data', self.test_method, 'num_baits_preys.csv')
             num_baits_preys = pd.read_csv(filename, index_col='study')
             if len(self.sampled_studies) == 0:
                 all_studies = list(num_baits_preys.index)
-                if self.num_studies < 0 or self.num_studies >= len(all_studies):
+                if self.num_studies <= 0 or self.num_studies >= len(all_studies):
                     self.sampled_studies = all_studies
                 else:
                     rng = np.random.default_rng(self.seed)
