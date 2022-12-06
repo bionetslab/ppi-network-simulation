@@ -70,16 +70,22 @@ class Parameters(object):
         self.acceptance_threshold = float(data.get('acceptance_threshold', 0.0))
         self.num_studies = int(data.get('num_studies', 1000))
         self.sample_studies = bool(data.get('sample_studies', False))
+        self.sampled_studies = data.get('sampled_studies', [])
         self.sample_studies = self.sample_studies or (self.num_preys is None or self.num_baits is None)
-        self.sampled_studies = []
+        self.sample_studies = self.sample_studies or (len(self.sampled_studies) > 0)
         if self.sample_studies:
-            filename = join('data', self.test_method, 'num_preys_baits.csv')
-            rng = np.random.default_rng(self.seed)
-            num_baits_preys = pd.read_csv(filename)
-            all_studies = list(num_baits_preys.index)
-            self.sampled_studies = rng.choice(all_studies, size=self.num_studies, replace=False)
+            filename = join('ppinetsim', 'data', self.test_method, 'num_baits_preys.csv')
+            num_baits_preys = pd.read_csv(filename, index_col='study')
+            if len(self.sampled_studies) == 0:
+                all_studies = list(num_baits_preys.index)
+                if self.num_studies < 0 or self.num_studies >= len(all_studies):
+                    self.sampled_studies = all_studies
+                else:
+                    rng = np.random.default_rng(self.seed)
+                    self.sampled_studies = rng.choice(all_studies, size=self.num_studies, replace=False)
+            self.num_studies = len(self.sampled_studies)
             self.num_preys = []
             self.num_baits = []
-            for sampled_study in self.sample_studies:
+            for sampled_study in self.sampled_studies:
                 self.num_preys.append(num_baits_preys.loc[sampled_study, 'num_preys'])
                 self.num_baits.append(num_baits_preys.loc[sampled_study, 'num_baits'])

@@ -1,2 +1,4 @@
-from .simulator import run_simulation
-from .parameters import Parameters
+from .simulator import *
+from .bayesian_inference import *
+from .parameters import *
+from .utils import *

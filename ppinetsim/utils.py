@@ -12,16 +12,16 @@ def initialize_matrices(parameters: Parameters):
     else:
         raise ValueError(f'Invalid generator name {parameters.generator}. Valid choices: "erdos-renyi", "barabasi-albert".')
     adj_ground_truth = nx.to_numpy_array(graph, dtype=bool)
-    adj_observed = np.ndarray((parameters.num_proteins, parameters.num_proteins), dtype=bool)
+    adj_simulated = np.ndarray((parameters.num_proteins, parameters.num_proteins), dtype=bool)
     num_tests = np.ndarray((parameters.num_proteins, parameters.num_proteins), dtype=np.int32)
     num_positive_tests = np.ndarray((parameters.num_proteins, parameters.num_proteins), dtype=np.int32)
-    return adj_ground_truth, adj_observed, num_tests, num_positive_tests
+    return adj_ground_truth, adj_simulated, num_tests, num_positive_tests
 
 
-def sample_protein_pairs(adj_observed: np.ndarray, parameters: Parameters, rng: np.random.Generator, i: int):
-    num_proteins = adj_observed.shape[0]
+def sample_protein_pairs(adj_simulated: np.ndarray, parameters: Parameters, rng: np.random.Generator, i: int):
+    num_proteins = adj_simulated.shape[0]
     if parameters.biased:
-        p = node_degrees(adj_observed, dtype=float) + parameters.baseline_degree
+        p = node_degrees(adj_simulated, dtype=float) + parameters.baseline_degree
         p = p / p.sum()
     else:
         p = np.full(num_proteins, 1 / num_proteins)
@@ -59,12 +59,12 @@ def test_protein_pairs(protein_pairs: list, adj_ground_truth: np.ndarray, num_te
         i += 1
 
 
-def update_observed_ppi_network(protein_pairs: list, num_tests: np.ndarray, num_positive_tests: np.ndarray,
-                                adj_observed: np.ndarray, parameters: Parameters):
+def update_simulated_ppi_network(protein_pairs: list, num_tests: np.ndarray, num_positive_tests: np.ndarray,
+                                 adj_simulated: np.ndarray, parameters: Parameters):
     for u, v in protein_pairs:
         is_edge = ((num_positive_tests[u, v] / num_tests[u, v]) > parameters.acceptance_threshold)
-        adj_observed[u, v] = is_edge
-        adj_observed[v, u] = is_edge
+        adj_simulated[u, v] = is_edge
+        adj_simulated[v, u] = is_edge
 
 
 def node_degrees(adj: np.ndarray, dtype=None):

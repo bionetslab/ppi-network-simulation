@@ -1,40 +1,54 @@
 import pandas as pd
+import itertools as itt
 from scipy.stats import wasserstein_distance
+from os.path import join
+import networkx as nx
 import ppinetsim.utils as utils
 from ppinetsim.parameters import Parameters
 from ppinetsim.simulator import run_simulation
 
 
-def estimate_likelihood(parameters: Parameters, num_simulations_per_generator=50, verbose=True):
+def estimate_likelihood(parameters: Parameters, num_simulations_per_generator=2, verbose=True):
     if not parameters.sample_studies:
         raise ValueError('Parameter "sample_studies" must be set to True for Bayesian inference.')
-    node_degrees_aggregated = _compute_node_degrees_in_aggregated_network(parameters)
-    degree_dist_aggregated = utils.degrees_to_distribution(node_degrees_aggregated)
+    adj_observed = _construct_observed_network(parameters)
+    node_degrees_observed = utils.node_degrees(adj_observed)
+    degree_dist_observed = utils.degrees_to_distribution(node_degrees_observed)
     generators = ['erdos-renyi', 'barabasi-albert']
-    distances_from_aggregated = []
+    distances_from_observed = []
     for generator in generators:
         parameters.generator = generator
         for _ in range(num_simulations_per_generator):
             node_degrees_simulated, _, _, _ = run_simulation(parameters, verbose)
             degree_dist_simulated = utils.degrees_to_distribution(node_degrees_simulated)
-            distance_from_aggregated = wasserstein_distance(degree_dist_aggregated[0, ], degree_dist_simulated[0, ],
-                                                            degree_dist_aggregated[1, ], degree_dist_simulated[1, ])
-            distances_from_aggregated.append((distance_from_aggregated, generator))
-    distances_from_aggregated.sort()
-    likelihood_at_k = pd.DataFrame(index=range(1, 2 * num_simulations_per_generator + 1), columns=generators, dtype=float)
+            distance_from_aggregated = wasserstein_distance(degree_dist_observed[0, ], degree_dist_simulated[0, ],
+                                                            degree_dist_observed[1, ], degree_dist_simulated[1, ])
+            distances_from_observed.append((distance_from_aggregated, generator))
+    distances_from_observed.sort()
+    likelihood_at_k = pd.DataFrame(columns=generators + ['k'], dtype=float)
     erdos_renyi_count = 0
     barabasi_albert_count = 0
     k = 0
-    for _, generator in distances_from_aggregated:
+    for _, generator in distances_from_observed:
         k += 1
         if generator == 'erdos-renyi':
             erdos_renyi_count += 1
         else:
             barabasi_albert_count += 1
-        likelihood_at_k.loc[k, 'erdos-renyi'] = erdos_renyi_count / k
-        likelihood_at_k.loc[k, 'barabasi-albert'] = barabasi_albert_count / k
+        likelihood_at_k.loc[k-1, 'k'] = k
+        likelihood_at_k.loc[k-1, 'erdos-renyi'] = erdos_renyi_count / k
+        likelihood_at_k.loc[k-1, 'barabasi-albert'] = barabasi_albert_count / k
     return likelihood_at_k
 
 
-def _compute_node_degrees_in_aggregated_network(parameters: Parameters):
-    return []
+def _construct_observed_network(parameters: Parameters):
+    edge_list = []
+    for sampled_study in parameters.sampled_studies:
+        filename = join('ppinetsim', 'data', parameters.test_method, f'{sampled_study}.csv')
+        adj_sampled_study = pd.read_csv(filename, index_col=0)
+    for edge in itt.product(adj_sampled_study.index, adj_sampled_study.columns):
+        if adj_sampled_study.loc[edge]:
+            edge_list.append(edge)
+    observed_network = nx.Graph()
+    observed_network.add_edges_from(edge_list)
+    return nx.to_numpy_array(observed_network, dtype=bool)
