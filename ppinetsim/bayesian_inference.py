@@ -48,7 +48,7 @@ def estimate_likelihood(parameters: Parameters, num_simulations_per_generator=50
     k = 0
     for _, generator in distances_from_observed:
         k += 1
-        if generator ==  'erdos-renyi':
+        if generator == 'erdos-renyi':
             erdos_renyi_count += 1
         else:
             barabasi_albert_count += 1

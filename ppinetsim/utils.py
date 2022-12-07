@@ -72,7 +72,7 @@ def node_degrees(adj: np.ndarray, dtype=None):
 
 
 def num_edges(adj: np.ndarray):
-    return int(adj.sum())
+    return int(adj.sum()) / 2
 
 
 def degrees_to_frequencies(node_degrees: np.ndarray, dtype=float):
