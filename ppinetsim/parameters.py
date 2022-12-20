@@ -39,13 +39,21 @@ class Parameters(object):
       PPI network. If set to 0, one positive test is enough to ensure inclusion. Range: [0,1).
     num_studies : `int`
       Specifies maximum number of test rounds to be carried out during simulation. Automatically set to number of all
-      real-world studies if set to value <= 0.
+      studies contained in data/<test_method> directory if set to value <= 0. If sample_studies is True and num_studies
+      is set to value <= number of all studies contained in data/<test_method> directory, studies are sampled without
+      replacement. Otherwise, they are sampled with replacement.
     sample_studies : `bool`
       If True, numbers of baits and preys are sampled from real-world studies.
     sampled_studies : `list`
       If non-empty, numbers of baits and preys are sampled from provided list of studies.
-    only_large_studies : `bool`
+    only_big_studies : `bool`
       If True, only studies with >= 200 PPIs are used for sampling numbers of baits and preys.
+    pm_num_baits : `int`
+      If set to value > 0, number of baits is uniformly sampled from the interval
+      [max(1, num_baits - pm_num_baits), num_baits + pm_num_baits]. Default: 0.
+    pm_num_preys : `int`
+      If set to value > 0, number of preys is uniformly sampled from the interval
+      [max(1, num_preys - pm_num_preys), num_preys + pm_num_preys]. Default: 0.
     """
 
     def __init__(self, path_to_json: Optional[str] = None):
@@ -80,7 +88,10 @@ class Parameters(object):
         self.sample_studies = self.sample_studies or (self.num_preys is None or self.num_baits is None)
         self.sample_studies = self.sample_studies or (len(self.sampled_studies) > 0)
         self.only_big_studies = bool(data.get('only_big_studies', True))
+        self.pm_num_baits = int(data.get('pm_num_baits', 0))
+        self.pm_num_preys = int(data.get('pm_num_preys', 0))
         if self.sample_studies:
+            rng = np.random.default_rng(self.seed)
             if self.only_big_studies:
                 filename = join('ppinetsim', 'data', self.test_method, 'num_baits_preys_200.csv')
             else:
@@ -88,14 +99,21 @@ class Parameters(object):
             num_baits_preys = pd.read_csv(filename, index_col='study')
             if len(self.sampled_studies) == 0:
                 all_studies = list(num_baits_preys.index)
-                if self.num_studies <= 0 or self.num_studies >= len(all_studies):
+                if self.num_studies <= 0:
                     self.sampled_studies = all_studies
+                elif self.num_studies > len(all_studies):
+                    self.sampled_studies = rng.choice(all_studies, size=self.num_studies, replace=True)
                 else:
-                    rng = np.random.default_rng(self.seed)
                     self.sampled_studies = rng.choice(all_studies, size=self.num_studies, replace=False)
             self.num_studies = len(self.sampled_studies)
             self.num_preys = []
             self.num_baits = []
             for sampled_study in self.sampled_studies:
-                self.num_preys.append(num_baits_preys.loc[sampled_study, 'num_preys'])
-                self.num_baits.append(num_baits_preys.loc[sampled_study, 'num_baits'])
+                num_baits = num_baits_preys.loc[sampled_study, 'num_baits']
+                num_preys = num_baits_preys.loc[sampled_study, 'num_preys']
+                if self.pm_num_baits > 0:
+                    num_baits = rng.integers(max(1, num_baits - self.pm_num_baits), num_baits + self.num_baits + 1)
+                if self.pm_num_preys > 0:
+                    num_preys = rng.integers(max(1, num_preys - self.pm_num_preys), num_preys + self.num_preys + 1)
+                self.num_baits.append(num_baits)
+                self.num_preys.append(num_preys)
