@@ -23,13 +23,13 @@ class Parameters(object):
     generator : `str`
       Choices: 'erdos-renyi', 'barabasi-albert'. Specifies random network model used to generate ground-truth.
     biased : `bool`
-      If True, the observed PPI network is generated under study bias.
+      If True, the observed PPI network is generated under study bias. Default: True.
     baseline_degree : `float`
       Specifies baseline value added to all degrees when generating PPI networks under study bias. Must be >0.
     test_method : `str`
       Choices: 'AP-MS', 'Y2H'. Specifies sampling strategy for protein pairs to be tested for interaction. If set to
-      'AP-MS', one bait protein is sampled and then tested against all other proteins. If set to 'Y2H', ``matrix_size``
-      many proteins are randomly sampled and all unordered pairs are tested for interaction.
+      'AP-MS', only the bait proteins are sampled under study bias. If set to 'Y2H', both baits and preys are sampled
+       under study bias. Has no effect if ``biased`` is set to False. Default: 'AP-MS'.
     num_baits : `str` or None
       Specifies maximum number of baits. If set to `None`, numbers of baits are sampled from real-world studies.
     num_preys : `int`
@@ -112,8 +112,8 @@ class Parameters(object):
                 num_baits = num_baits_preys.loc[sampled_study, 'num_baits']
                 num_preys = num_baits_preys.loc[sampled_study, 'num_preys']
                 if self.pm_num_baits > 0:
-                    num_baits = rng.integers(max(1, num_baits - self.pm_num_baits), num_baits + self.num_baits + 1)
+                    num_baits = rng.integers(max(1, num_baits - self.pm_num_baits), num_baits + self.pm_num_baits + 1)
                 if self.pm_num_preys > 0:
-                    num_preys = rng.integers(max(1, num_preys - self.pm_num_preys), num_preys + self.num_preys + 1)
+                    num_preys = rng.integers(max(1, num_preys - self.pm_num_preys), num_preys + self.pm_num_preys + 1)
                 self.num_baits.append(num_baits)
                 self.num_preys.append(num_preys)
