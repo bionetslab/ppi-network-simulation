@@ -22,6 +22,7 @@ def callPoweRlaw(distributionYs, simNum, t):
         }''')
     rpy2.robjects.r['saveVec'](v)
     run =  rpy2.robjects.r('''
+    if(length(v) != 0){
         pl_v <- displ$new(v)
         est <- estimate_xmin(pl_v)
         if(is.na(est$xmin) || is.infinite(est$gof)){
@@ -33,7 +34,7 @@ def callPoweRlaw(distributionYs, simNum, t):
         lines(pl_v, col = 'green')
         # category
         plCat <- 0
-        if(bs_p$p > 0.1){
+        if(bs_p$p >= 0.1){
           plCat <- 2
           meet <- 0
           for (tail in bs_p$bootstrap$ntail) {
@@ -59,8 +60,12 @@ def callPoweRlaw(distributionYs, simNum, t):
         }
         c(bs_p$p, est$xmin, est$pars, est$ntail,plCat)
         }
+        }else{
+          c(NA,NA,NA,NA)
+        }
         ''')
     return [run[0], run[1], run[2], run[3], run[4]]
+
 
 def calculate_final_degree_ground_truth(f,adj_ground_truth,parameters,pl_num,t,dir_output,i):
   
