@@ -1,0 +1,15 @@
+{
+    "num_proteins": 12283,
+    "num_ppis_ground_truth": 87438,
+    "false_positive_rate": 0.4,
+    "false_negative_rate": 0.25,
+    "seed": null,
+    "generator": "erdos-renyi",
+    "biased": true,
+    "baseline_degree": 0.01,
+    "test_method": "Y2H",
+    "acceptance_threshold": 0.0,
+    "num_studies": -1,
+    "sample_studies": true,
+    "only_big_studies": false
+}
