@@ -1,1 +1,28 @@
-4369.706280946732
+['params_AP-MS_accTh05_FPR025_FNR025.json', 'params_AP-MS_accTh00_FPR01_FNR00.json', 'params_AP-MS_accTh00_FPR025_FNR03.json', 'params_AP-MS_accTh00_FPR02_FNR025.json', 'params_AP-MS_accTh00_FPR00_FNR02.json', 'params_AP-MS_accTh00_FPR015_FNR005.json', 'params_AP-MS_accTh05_FPR01_FNR005.json', 'params_AP-MS_accTh00_FPR03_FNR00.json', 'params_AP-MS_accTh05_FPR00_FNR03.json', 'params_AP-MS_accTh05_FPR00_FNR015.json', 'params_AP-MS_accTh05_FPR005_FNR035.json', 'params_AP-MS_accTh00_FPR005_FNR005.json', 'params_AP-MS_accTh05_FPR015_FNR015.json', 'params_AP-MS_accTh00_FPR005_FNR025.json', 'params_AP-MS_accTh05_FPR04_FNR015.json', 'params_AP-MS_accTh05_FPR03_FNR025.json']
+Traceback (most recent call last):
+  File "script_simulation.py", line 124, in <module>
+    Parallel(n_jobs = jobs)(delayed(simulation_forParallel(m,f,nsg) for f in files))
+  File "/home/ieo5924/.local/lib/python3.8/site-packages/joblib/parallel.py", line 1045, in __call__
+    iterator = iter(iterable)
+TypeError: 'function' object is not iterable
+['params_AP-MS_accTh05_FPR025_FNR025.json', 'params_AP-MS_accTh00_FPR01_FNR00.json', 'params_AP-MS_accTh00_FPR025_FNR03.json', 'params_AP-MS_accTh00_FPR02_FNR025.json', 'params_AP-MS_accTh00_FPR00_FNR02.json', 'params_AP-MS_accTh00_FPR015_FNR005.json', 'params_AP-MS_accTh05_FPR01_FNR005.json', 'params_AP-MS_accTh00_FPR03_FNR00.json', 'params_AP-MS_accTh05_FPR00_FNR03.json', 'params_AP-MS_accTh05_FPR00_FNR015.json', 'params_AP-MS_accTh05_FPR005_FNR035.json', 'params_AP-MS_accTh00_FPR005_FNR005.json', 'params_AP-MS_accTh05_FPR015_FNR015.json', 'params_AP-MS_accTh00_FPR005_FNR025.json', 'params_AP-MS_accTh05_FPR04_FNR015.json', 'params_AP-MS_accTh05_FPR03_FNR025.json']
+Traceback (most recent call last):
+  File "script_simulation.py", line 124, in <module>
+    Parallel(n_jobs = jobs)(delayed(simulation_forParallel(m,f,nsg) for f in files))
+  File "/home/ieo5924/.local/lib/python3.8/site-packages/joblib/parallel.py", line 1045, in __call__
+    iterator = iter(iterable)
+TypeError: 'function' object is not iterable
+['params_AP-MS_accTh05_FPR025_FNR025.json', 'params_AP-MS_accTh00_FPR01_FNR00.json', 'params_AP-MS_accTh00_FPR025_FNR03.json', 'params_AP-MS_accTh00_FPR02_FNR025.json', 'params_AP-MS_accTh00_FPR00_FNR02.json', 'params_AP-MS_accTh00_FPR015_FNR005.json', 'params_AP-MS_accTh05_FPR01_FNR005.json', 'params_AP-MS_accTh00_FPR03_FNR00.json', 'params_AP-MS_accTh05_FPR00_FNR03.json', 'params_AP-MS_accTh05_FPR00_FNR015.json', 'params_AP-MS_accTh05_FPR005_FNR035.json', 'params_AP-MS_accTh00_FPR005_FNR005.json', 'params_AP-MS_accTh05_FPR015_FNR015.json', 'params_AP-MS_accTh00_FPR005_FNR025.json', 'params_AP-MS_accTh05_FPR04_FNR015.json', 'params_AP-MS_accTh05_FPR03_FNR025.json']
+Traceback (most recent call last):
+  File "script_simulation.py", line 124, in <module>
+    likelihood_at_k, all_results = Parallel(n_jobs = jobs)(delayed(simulation_forParallel(m,f,nsg) for f in files))
+  File "/home/ieo5924/.local/lib/python3.8/site-packages/joblib/parallel.py", line 1045, in __call__
+    iterator = iter(iterable)
+TypeError: 'function' object is not iterable
+['params_AP-MS_accTh05_FPR025_FNR025.json', 'params_AP-MS_accTh00_FPR01_FNR00.json', 'params_AP-MS_accTh00_FPR025_FNR03.json', 'params_AP-MS_accTh00_FPR02_FNR025.json', 'params_AP-MS_accTh00_FPR00_FNR02.json', 'params_AP-MS_accTh00_FPR015_FNR005.json', 'params_AP-MS_accTh05_FPR01_FNR005.json', 'params_AP-MS_accTh00_FPR03_FNR00.json', 'params_AP-MS_accTh05_FPR00_FNR03.json', 'params_AP-MS_accTh05_FPR00_FNR015.json', 'params_AP-MS_accTh05_FPR005_FNR035.json', 'params_AP-MS_accTh00_FPR005_FNR005.json', 'params_AP-MS_accTh05_FPR015_FNR015.json', 'params_AP-MS_accTh00_FPR005_FNR025.json', 'params_AP-MS_accTh05_FPR04_FNR015.json', 'params_AP-MS_accTh05_FPR03_FNR025.json']
+Traceback (most recent call last):
+  File "script_simulation.py", line 124, in <module>
+    Parallel(n_jobs = jobs)(delayed(simulation_forParallel(m,f,nsg) for f in files))
+  File "/home/ieo5924/.local/lib/python3.8/site-packages/joblib/parallel.py", line 1045, in __call__
+    iterator = iter(iterable)
+TypeError: 'function' object is not iterable

@@ -9,12 +9,14 @@ import seaborn as sns
 from os.path import join
 import time
 import os
+from joblib import Parallel, delayed
+import json
 
 
 ##### create json input files #######
 
-#seq = np.arange(0,0.45,0.05)
-seq = np.arange(0,0.06,0.05)
+seq = np.arange(0,0.45,0.05)
+
 
 par = ['params_AP-MS_FPR00.json','params_Y2H_FPR00.json']
 
@@ -26,8 +28,8 @@ for p in par:
   for FP in seq:
       for FN in seq:
         for a in [0.0,0.5]:
-          data['false_negative_rate'] = FN
-          data['false_positive_rate'] = FP
+          data['false_negative_rate'] = round(FN,4)
+          data['false_positive_rate'] = round(FP,4)
           data['acceptance_threshold'] = a
           # create folder
           d = 'parameter_settings/all_param_combinations/'+ data['test_method']
@@ -69,7 +71,7 @@ for p in par:
 #       json.dump(results4json, codecs.open(d+'/all_results.json', 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=4)
 
 
-##à#### second version with Parallel #####
+##à#### version with Parallel #####
 
 def simulation_forParallel(m,f,nsg):
   """Runs the simulation for several combinations of parameters.
@@ -102,7 +104,7 @@ def simulation_forParallel(m,f,nsg):
     temp[2]=[list(temp[2][0]),list(temp[2][1])]
     results4json.append(tuple(temp))
   json.dump(results4json, codecs.open(d+'/all_results_'+parameters.test_method + '_'+ 'accTh' + str(parameters.acceptance_threshold).replace('.','') + '_FPR'+ str(parameters.false_positive_rate).replace('.','') + '_FNR'+ str(parameters.false_negative_rate).replace('.','')+'.json', 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=4)
-    
+
 #------------------------------------------
 
 if os.path.exists('output_results') == False:
@@ -110,14 +112,17 @@ if os.path.exists('output_results') == False:
 
 method = ['AP-MS','Y2H']
 nsg = 50
-jobs = 20
+jobs = 1
 
+method = ['AP-MS']
+start_time = time.time()
 for m in method:
   dir_parameters = 'parameter_settings/all_param_combinations/'+ m +'/'
   files = os.listdir(dir_parameters)
-  Parallel(n_jobs = jobs)(delayed(simulation_forParallel(m,f,nsg) for f in files)
-
-
+  files = files[0:16]
+  print(files)
+  Parallel(n_jobs = jobs)(delayed(simulation_forParallel(m,f,nsg) for f in files))
+print(time.time() - start_time)
 
 
 
