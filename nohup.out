@@ -1,0 +1,35 @@
+['params_AP-MS_accTh00_FPR005_FNR00.json', 'params_AP-MS_accTh00_FPR005_FNR005.json', 'params_AP-MS_accTh00_FPR005_FNR01.json', 'params_AP-MS_accTh00_FPR005_FNR015.json', 'params_AP-MS_accTh00_FPR005_FNR02.json', 'params_AP-MS_accTh00_FPR005_FNR025.json', 'params_AP-MS_accTh00_FPR005_FNR03.json', 'params_AP-MS_accTh00_FPR005_FNR035.json']
+joblib.externals.loky.process_executor._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/site-packages/joblib/externals/loky/process_executor.py", line 428, in _process_worker
+    r = call_item()
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/site-packages/joblib/externals/loky/process_executor.py", line 275, in __call__
+    return self.fn(*self.args, **self.kwargs)
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/site-packages/joblib/_parallel_backends.py", line 620, in __call__
+    return self.func(*args, **kwargs)
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/site-packages/joblib/parallel.py", line 288, in __call__
+    return [func(*args, **kwargs)
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/site-packages/joblib/parallel.py", line 288, in <listcomp>
+    return [func(*args, **kwargs)
+  File "script_simulation.py", line 106, in simulation_forParallel
+    json.dump(results4json, codecs.open(d+'/all_results_'+parameters.test_method + '_'+ 'accTh' + str(parameters.acceptance_threshold).replace('.','') + '_FPR'+ str(parameters.false_positive_rate).replace('.','') + '_FNR'+ str(parameters.false_negative_rate).replace('.','')+'.json', 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=4)
+NameError: name 'codecs' is not defined
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "script_simulation.py", line 124, in <module>
+    Parallel(n_jobs = jobs)(delayed(simulation_forParallel)(m,f,nsg) for f in files)
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/site-packages/joblib/parallel.py", line 1098, in __call__
+    self.retrieve()
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/site-packages/joblib/parallel.py", line 975, in retrieve
+    self._output.extend(job.get(timeout=self.timeout))
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/site-packages/joblib/_parallel_backends.py", line 567, in wrap_future_result
+    return future.result(timeout=timeout)
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/concurrent/futures/_base.py", line 444, in result
+    return self.__get_result()
+  File "/home/ieo5924/mambaforge/envs/simulation_env/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+NameError: name 'codecs' is not defined

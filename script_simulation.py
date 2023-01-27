@@ -11,6 +11,7 @@ import time
 import os
 from joblib import Parallel, delayed
 import json
+import codecs
 
 
 ##### create json input files #######
@@ -39,7 +40,7 @@ for p in par:
           with open(d+'/params_'+data['test_method'] + '_accTh'+str(data['acceptance_threshold']).replace('.','')+'_FPR' + str(data['false_positive_rate']).replace('.','')+'_FNR'+ str(data['false_negative_rate']).replace('.','')+'.json', "w") as outfile:
             json.dump(data, outfile, indent = 4)
 
-
+print('parameters files done!')
 #----------------------------------------------------------------------------
 # if os.path.exists('output_results') == False:
 #   os.mkdir('output_results')
@@ -87,7 +88,7 @@ def simulation_forParallel(m,f,nsg):
     save outputs of estimate_likelihood in csv and json files
     """
   parameters = ppinetsim.Parameters('parameter_settings/all_param_combinations/'+m+'/'+f)
-    
+  print(f)  
   if os.path.exists('output_results/'+str(parameters.test_method)) == False:
     os.mkdir('output_results/'+str(parameters.test_method))
     
@@ -111,17 +112,19 @@ if os.path.exists('output_results') == False:
   os.mkdir('output_results')
 
 method = ['AP-MS','Y2H']
-nsg = 50
+nsg = 1
 jobs = 1
 
 method = ['AP-MS']
 start_time = time.time()
 for m in method:
   dir_parameters = 'parameter_settings/all_param_combinations/'+ m +'/'
+  print(m)
   files = os.listdir(dir_parameters)
-  files = files[0:16]
+  #files = files[0:8]
+  files = ['params_AP-MS_accTh00_FPR005_FNR00.json']
   print(files)
-  Parallel(n_jobs = jobs)(delayed(simulation_forParallel(m,f,nsg) for f in files))
+  Parallel(n_jobs = jobs)(delayed(simulation_forParallel)(m,f,nsg) for f in files)
 print(time.time() - start_time)
 
 
