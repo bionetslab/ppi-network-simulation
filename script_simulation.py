@@ -112,8 +112,8 @@ if os.path.exists('output_results') == False:
   os.mkdir('output_results')
 
 method = ['AP-MS','Y2H']
-nsg = 1
-jobs = 1
+nsg = 50
+jobs = 8
 
 method = ['AP-MS']
 start_time = time.time()
@@ -121,11 +121,12 @@ for m in method:
   dir_parameters = 'parameter_settings/all_param_combinations/'+ m +'/'
   print(m)
   files = os.listdir(dir_parameters)
-  #files = files[0:8]
-  files = ['params_AP-MS_accTh00_FPR005_FNR00.json']
+  files = files[24:32]
+  #files = ['params_Y2H_accTh00_FPR005_FNR00.json','params_Y2H_accTh00_FPR00_FNR00.json']
   print(files)
   Parallel(n_jobs = jobs)(delayed(simulation_forParallel)(m,f,nsg) for f in files)
 print(time.time() - start_time)
+
 
 
 
