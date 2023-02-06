@@ -121,8 +121,12 @@ for m in method:
   dir_parameters = 'parameter_settings/all_param_combinations/'+ m +'/'
   print(m)
   files = os.listdir(dir_parameters)
-  files = files[24:32]
-  #files = ['params_Y2H_accTh00_FPR005_FNR00.json','params_Y2H_accTh00_FPR00_FNR00.json']
+  #files = files[24:32]
+  files = ['params_AP-MS_accTh00_FPR01_FNR03.json','params_AP-MS_accTh00_FPR01_FNR04.json','params_AP-MS_accTh00_FPR02_FNR00.json','params_AP-MS_accTh00_FPR02_FNR01.json','params_AP-MS_accTh00_FPR02_FNR02.json',
+           'params_AP-MS_accTh00_FPR02_FNR03.json','params_AP-MS_accTh00_FPR02_FNR04.json','params_AP-MS_accTh00_FPR03_FNR00.json','params_AP-MS_accTh00_FPR03_FNR01.json','params_AP-MS_accTh00_FPR03_FNR02.json',
+           'params_AP-MS_accTh00_FPR03_FNR03.json','params_AP-MS_accTh00_FPR03_FNR04.json','params_AP-MS_accTh00_FPR04_FNR00.json','params_AP-MS_accTh00_FPR04_FNR01.json','params_AP-MS_accTh00_FPR04_FNR02.json',
+           'params_AP-MS_accTh00_FPR04_FNR03.json','params_AP-MS_accTh00_FPR04_FNR04.json','params_AP-MS_accTh05_FPR00_FNR00.json','params_AP-MS_accTh05_FPR00_FNR01.json','params_AP-MS_accTh05_FPR00_FNR02.json',
+           'params_AP-MS_accTh05_FPR00_FNR03.json','params_AP-MS_accTh05_FPR00_FNR04.json','params_AP-MS_accTh05_FPR01_FNR00.json','params_AP-MS_accTh05_FPR01_FNR01.json']
   print(files)
   Parallel(n_jobs = jobs)(delayed(simulation_forParallel)(m,f,nsg) for f in files)
 print(time.time() - start_time)
