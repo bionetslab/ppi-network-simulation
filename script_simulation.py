@@ -96,7 +96,7 @@ def simulation_forParallel(m,f,nsg):
   if(os.path.exists(d)) == False:
     os.mkdir(d)
     
-  likelihood_at_k, all_results = ppinetsim.estimate_likelihood(parameters, num_simulations_per_generator=nsg)
+  likelihood_at_k, all_results = ppinetsim.estimate_posteriors(parameters, num_simulations_per_generator=nsg)
   likelihood_at_k.to_csv(d+'/likelihood_'+parameters.test_method + '_'+ 'accTh' + str(parameters.acceptance_threshold).replace('.','') + '_FPR'+ str(parameters.false_positive_rate).replace('.','') + '_FNR'+ str(parameters.false_negative_rate).replace('.','') +'.csv', index = False)
   #save results in json
   results4json=[]

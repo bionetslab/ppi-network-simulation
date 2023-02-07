@@ -9,8 +9,9 @@ from ppinetsim.simulator import run_simulation
 import seaborn as sns
 
 
-def estimate_likelihood(parameters: Parameters, num_simulations_per_generator=10, verbose=True):
-    """Estimates likelihood of observed network given Barabasi-Albert and Erdos-Renyi models.
+def estimate_posteriors(parameters: Parameters, num_simulations_per_generator=10, verbose=True):
+    """Estimates posterior probabilities of observed PPI network having emerged from PL-distributed or from binomially
+    distributed ground-truth interactome.
 
     Parameters
     ----------
@@ -23,8 +24,9 @@ def estimate_likelihood(parameters: Parameters, num_simulations_per_generator=10
 
     Returns
     -------
-    likelihood_at_k : pd.DataFrame
-      Data frame with likelihood k-NN estimate of the observed network's likelihood given a BA and an ER ground truth.
+    posterior_at_k : pd.DataFrame
+      Data frame with k-NN estimates of the posterior probabilities that observed network has emerged from PL- or from
+      binomially distributed ground truth.
     all_results : list
       List 3-tuples containing the results. The first entry contains the EMD of the simulated network from the observed
       network, the second entry the generator used for the hypothetical ground truth, and the third entry the degree
@@ -46,7 +48,7 @@ def estimate_likelihood(parameters: Parameters, num_simulations_per_generator=10
                                                             degree_dist_observed[1, ], degree_dist_simulated[1, ])
             all_results.append((distance_from_aggregated, generator, degree_dist_simulated))
     all_results.sort()
-    likelihood_at_k = pd.DataFrame(columns=['k', 'Erdos-Renyi', 'Barabasi-Albert'], dtype=float)
+    posterior_at_k = pd.DataFrame(columns=['k', 'Erdos-Renyi', 'Barabasi-Albert'], dtype=float)
     erdos_renyi_count = 0
     barabasi_albert_count = 0
     k = 0
@@ -56,19 +58,19 @@ def estimate_likelihood(parameters: Parameters, num_simulations_per_generator=10
             erdos_renyi_count += 1
         else:
             barabasi_albert_count += 1
-        likelihood_at_k.loc[k-1, 'k'] = k
-        likelihood_at_k.loc[k-1, 'Erdos-Renyi'] = erdos_renyi_count / k
-        likelihood_at_k.loc[k-1, 'Barabasi-Albert'] = barabasi_albert_count / k
-    return likelihood_at_k, all_results
+        posterior_at_k.loc[k-1, 'k'] = k
+        posterior_at_k.loc[k-1, 'Ground truth binomially distributed'] = erdos_renyi_count / k
+        posterior_at_k.loc[k-1, 'Ground truth PL-distributed'] = barabasi_albert_count / k
+    return posterior_at_k, all_results
 
 
-def plot_likelihoods(likelihood_at_k, ax=None):
+def plot_posteriors(posterior_at_k, ax=None):
     """Plots likelihoods.
 
     Parameters
     ----------
-    likelihood_at_k : pd.DataFrame
-      Data frame of likelihoods returned by `estimate_likelihood()`.
+    posterior_at_k : pd.DataFrame
+      Data frame of posteriors returned by `estimate_posteriors()`.
     ax : matplotlib.pyplot.axis
       Axis for the plot. If None, a new axis is generated.
 
@@ -78,10 +80,10 @@ def plot_likelihoods(likelihood_at_k, ax=None):
       Axis containing the plot.
 
     """
-    data = likelihood_at_k.melt(value_vars=['Erdos-Renyi', 'Barabasi-Albert'], id_vars=['k'], var_name='Generator',
-                                value_name='Likelihood')
-    return sns.lineplot(data=data, x='k', y='Likelihood', hue='Generator', hue_order=['Erdos-Renyi', 'Barabasi-Albert'],
-                        ax=ax)
+    data = posterior_at_k.melt(value_vars=['Ground truth binomially distributed', 'Ground truth PL-distributed'],
+                               id_vars=['k'], var_name='Class', value_name='Estimated posterior')
+    return sns.lineplot(data=data, x='k', y='Estimated posterior', hue='Class',
+                        hue_order=['Ground truth PL-distributed', 'Ground truth binomially distributed'], ax=ax)
 
 
 def plot_distances(all_results, kind='box', ax=None):
