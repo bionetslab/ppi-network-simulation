@@ -64,7 +64,7 @@ def estimate_posteriors(parameters: Parameters, num_simulations_per_generator=10
     return posterior_at_k, all_results
 
 
-def plot_posteriors(posterior_at_k, ax=None):
+def plot_posteriors(posterior_at_k, acceptance_threshold, false_positive_rate, false_negative_rate, ax=None):
     """Plots likelihoods.
 
     Parameters
@@ -82,8 +82,11 @@ def plot_posteriors(posterior_at_k, ax=None):
     """
     data = posterior_at_k.melt(value_vars=['Ground truth binomially distributed', 'Ground truth PL-distributed'],
                                id_vars=['k'], var_name='Class', value_name='Estimated posterior')
+    gamma = r'$\gamma$'
+    title = f'FPR={false_positive_rate}, FNR={false_negative_rate}, {gamma}={acceptance_threshold}'
     return sns.lineplot(data=data, x='k', y='Estimated posterior', hue='Class',
-                        hue_order=['Ground truth PL-distributed', 'Ground truth binomially distributed'], ax=ax)
+                        hue_order=['Ground truth PL-distributed', 'Ground truth binomially distributed'],
+                        ax=ax).set(title=title)
 
 
 def plot_distances(all_results, kind='box', ax=None):
