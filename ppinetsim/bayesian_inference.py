@@ -59,18 +59,21 @@ def estimate_posteriors(parameters: Parameters, num_simulations_per_generator=10
         else:
             barabasi_albert_count += 1
         posterior_at_k.loc[k-1, 'k'] = k
-        posterior_at_k.loc[k-1, 'Ground truth binomially distributed'] = erdos_renyi_count / k
-        posterior_at_k.loc[k-1, 'Ground truth PL-distributed'] = barabasi_albert_count / k
+        posterior_at_k.loc[k-1, 'Erdos-Renyi'] = erdos_renyi_count / k
+        posterior_at_k.loc[k-1, 'Barabasi-Albert'] = barabasi_albert_count / k
     return posterior_at_k, all_results
 
 
-def plot_posteriors(posterior_at_k, acceptance_threshold, false_positive_rate, false_negative_rate, ax=None):
+def plot_posteriors(posteriors, parameters=None, ax=None):
     """Plots likelihoods.
 
     Parameters
     ----------
-    posterior_at_k : pd.DataFrame
+    posteriors : pd.DataFrame
       Data frame of posteriors returned by `estimate_posteriors()`.
+    parameters : dict
+      None or dictionary with keys 'test_method', 'false_positive_rate', 'false_negative_rate', and
+      'acceptance_threshold'. If provided, the parameters are displayed in title of the plot.
     ax : matplotlib.pyplot.axis
       Axis for the plot. If None, a new axis is generated.
 
@@ -80,41 +83,64 @@ def plot_posteriors(posterior_at_k, acceptance_threshold, false_positive_rate, f
       Axis containing the plot.
 
     """
-    data = posterior_at_k.melt(value_vars=['Ground truth binomially distributed', 'Ground truth PL-distributed'],
-                               id_vars=['k'], var_name='Class', value_name='Estimated posterior')
-    gamma = r'$\gamma$'
-    title = f'FPR={false_positive_rate}, FNR={false_negative_rate}, {gamma}={acceptance_threshold}'
+    posteriors.rename(columns={'Erdos-Renyi': 'Ground truth binomially distributed',
+                               'Barabasi-Albert': 'Ground truth PL-distributed'}, inplace=True)
+    data = posteriors.melt(value_vars=['Ground truth binomially distributed', 'Ground truth PL-distributed'],
+                           id_vars=['k'], var_name='Class', value_name='Estimated posterior')
     return sns.lineplot(data=data, x='k', y='Estimated posterior', hue='Class',
                         hue_order=['Ground truth PL-distributed', 'Ground truth binomially distributed'],
-                        ax=ax).set(title=title)
+                        ax=ax).set(title=_title(parameters))
 
 
-def plot_distances(all_results, kind='box', ax=None):
+def plot_distances(all_results, parameters=None, kind='box', ax=None):
     """Plots earth mover's distances of simulated networks from observed network.
 
     Parameters
     ----------
     all_results : list
       Lists of results returned by `estimate_likelihood()'.
+    parameters : dict
+      None or dictionary with keys 'test_method', 'false_positive_rate', 'false_negative_rate', and
+      'acceptance_threshold'. If provided, the parameters are displayed in title of the plot.
     kind : str
-      Kind of the plot, either 'box' or 'violin'.
+      Kind of the plot, either 'box', 'violin', or 'swarm'.
     ax : matplotlib.pyplot.axis
 
     Returns
     -------
 
     """
-    generator_map = {'erdos-renyi': 'Erdos-Renyi', 'barabasi-albert': 'Barabasi-Albert'}
-    data = pd.DataFrame(data={'Generator': [generator_map[generator] for _, generator, _ in all_results],
+    generator_map = {'erdos-renyi': 'Binomially distributed', 'barabasi-albert': 'PL-distributed'}
+    data = pd.DataFrame(data={'Ground truth': [generator_map[generator] for _, generator, _ in all_results],
                               'EMD from observed network': [dist for dist, _, _ in all_results]})
     if kind == 'box':
-        return sns.boxplot(data=data, x='Generator', y='EMD from observed network',
-                           order=['Erdos-Renyi', 'Barabasi-Albert'], ax=ax)
+        return sns.boxplot(data=data, x='Ground truth', y='EMD from observed network',
+                           order=['PL-distributed', 'Binomially distributed'], ax=ax).set(title=_title(parameters))
     elif kind == 'violin':
-        return sns.violinplot(data=data, x='Generator', y='EMD from observed network', cut=0,
-                           order=['Erdos-Renyi', 'Barabasi-Albert'], ax=ax)
+        return sns.violinplot(data=data, x='Ground truth', y='EMD from observed network', cut=0,
+                              order=['PL-distributed', 'Binomially distributed'], ax=ax).set(title=_title(parameters))
+    elif kind == 'swarm':
+        return sns.swarmplot(data=data, x='Ground truth', y='EMD from observed network',
+                             order=['PL-distributed', 'Binomially distributed'], ax=ax).set(title=_title(parameters))
     else:
-        raise RuntimeError(f'Invalid argument kind="{kind}". Valid options: "box", "violin".')
+        raise RuntimeError(f'Invalid argument kind="{kind}". Valid options: "box", "violin", "swarm".')
+
+
+def _title(parameters):
+    if parameters is None:
+        return ''
+    title_parts = []
+    if 'test_method' in parameters:
+        title_parts.append(f'{parameters["test_method"]} testing')
+    if 'false_positive_rate' in parameters:
+        fpr = r'\mathit{FPR}'
+        title_parts.append(r'${}={}$'.format(fpr, parameters['false_positive_rate']))
+    if 'false_negative_rate' in parameters:
+        fnr = r'\mathit{FNR}'
+        title_parts.append(r'${}={}$'.format(fnr, parameters['false_negative_rate']))
+    if 'acceptance_threshold' in parameters:
+        title_parts.append(r'$\gamma={}$'.format(parameters['acceptance_threshold']))
+    return ', '.join(title_parts)
 
 
 def _construct_observed_network(parameters: Parameters):
