@@ -17,7 +17,7 @@ import codecs
 ##### create json input files #######
 
 #seq = np.arange(0,0.45,0.05)
-seq_FP = [0.0,0.0125,0.025,0.05,0.1,0.2,0.3,0.4]
+seq_FP = [0.0,0.003125,0.00625,0.0125,0.025,0.05,0.1,0.2,0.3,0.4]
 seq_FN = [0.0,0.1,0.2,0.3,0.4]
 
 
@@ -31,8 +31,8 @@ for p in par:
   for FP in seq_FP:
       for FN in seq_FN:
         for a in [0.0,0.5]:
-          data['false_negative_rate'] = round(FN,4)
-          data['false_positive_rate'] = round(FP,4)
+          data['false_negative_rate'] = FN
+          data['false_positive_rate'] = FP
           data['acceptance_threshold'] = a
           # create folder
           d = 'parameter_settings/all_param_combinations/'+ data['test_method']
@@ -95,11 +95,11 @@ for m in method:
   print(m)
   files = os.listdir(dir_parameters)
   #files = files[24:32]
-  files = ['params_AP-MS_accTh05_FPR00125_FNR00.json','params_AP-MS_accTh05_FPR00125_FNR01.json','params_AP-MS_accTh05_FPR00125_FNR02.json','params_AP-MS_accTh05_FPR00125_FNR03.json','params_AP-MS_accTh05_FPR00125_FNR04.json','params_AP-MS_accTh05_FPR0025_FNR00.json','params_AP-MS_accTh05_FPR0025_FNR01.json','params_AP-MS_accTh05_FPR0025_FNR02.json','params_AP-MS_accTh05_FPR0025_FNR03.json','params_AP-MS_accTh05_FPR0025_FNR04.json','params_AP-MS_accTh05_FPR005_FNR00.json','params_AP-MS_accTh05_FPR005_FNR01.json','params_AP-MS_accTh05_FPR005_FNR02.json','params_AP-MS_accTh05_FPR005_FNR03.json','params_AP-MS_accTh05_FPR005_FNR04.json','params_AP-MS_accTh05_FPR02_FNR03.json']
+  files = ['params_AP-MS_accTh00_FPR0003125_FNR00.json','params_AP-MS_accTh00_FPR0003125_FNR01.json','params_AP-MS_accTh00_FPR0003125_FNR02.json','params_AP-MS_accTh00_FPR0003125_FNR03.json','params_AP-MS_accTh00_FPR0003125_FNR04.json','params_AP-MS_accTh00_FPR000625_FNR00.json','params_AP-MS_accTh00_FPR000625_FNR01.json','params_AP-MS_accTh00_FPR000625_FNR02.json','params_AP-MS_accTh00_FPR000625_FNR03.json','params_AP-MS_accTh00_FPR000625_FNR04.json']
   print(files)
   Parallel(n_jobs = jobs)(delayed(simulation_forParallel)(m,f,nsg) for f in files)
 print(time.time() - start_time)
-
+print('Done!')
 
 
 
