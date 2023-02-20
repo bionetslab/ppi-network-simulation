@@ -86,16 +86,15 @@ if os.path.exists('output_results') == False:
 
 method = ['AP-MS','Y2H']
 nsg = 50
-jobs = 8
+jobs = 6
 
-method = ['AP-MS']
+method = ['Y2H']
 start_time = time.time()
 for m in method:
   dir_parameters = 'parameter_settings/all_param_combinations/'+ m +'/'
   print(m)
   files = os.listdir(dir_parameters)
-  #files = files[24:32]
-  files = ['params_AP-MS_accTh05_FPR02_FNR02.json','params_AP-MS_accTh00_FPR0003125_FNR00.json','params_AP-MS_accTh00_FPR0003125_FNR01.json','params_AP-MS_accTh00_FPR0003125_FNR02.json','params_AP-MS_accTh00_FPR0003125_FNR03.json','params_AP-MS_accTh00_FPR0003125_FNR04.json','params_AP-MS_accTh00_FPR000625_FNR00.json','params_AP-MS_accTh00_FPR000625_FNR01.json','params_AP-MS_accTh00_FPR000625_FNR02.json','params_AP-MS_accTh00_FPR000625_FNR03.json','params_AP-MS_accTh00_FPR000625_FNR04.json']
+  files = ['params_Y2H_accTh00_FPR0003125_FNR04.json','params_Y2H_accTh00_FPR000625_FNR00.json','params_Y2H_accTh00_FPR000625_FNR01.json','params_Y2H_accTh00_FPR000625_FNR02.json','params_Y2H_accTh00_FPR000625_FNR03.json','params_Y2H_accTh00_FPR000625_FNR04.json']
   print(files)
   Parallel(n_jobs = jobs)(delayed(simulation_forParallel)(m,f,nsg) for f in files)
 print(time.time() - start_time)
