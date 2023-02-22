@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# PDFs
+*.pdf
+
 # DS_Store
 *.DS_Store
 
