@@ -148,9 +148,9 @@ def _construct_observed_network(parameters: Parameters):
     for sampled_study in parameters.sampled_studies:
         filename = join('ppinetsim', 'data', parameters.test_method, f'{sampled_study}.csv')
         adj_sampled_study = pd.read_csv(filename, index_col=0)
-    for edge in itt.product(adj_sampled_study.index, adj_sampled_study.columns):
-        if adj_sampled_study.loc[edge]:
-            edge_list.append(edge)
+        for edge in itt.product(adj_sampled_study.index, adj_sampled_study.columns):
+            if adj_sampled_study.loc[edge]:
+                edge_list.append(edge)
     observed_network = nx.Graph()
     observed_network.add_edges_from(edge_list)
     return nx.to_numpy_array(observed_network, dtype=bool)
