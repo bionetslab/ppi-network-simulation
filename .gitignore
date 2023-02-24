@@ -13,6 +13,7 @@ __pycache__/
 *.so
 
 /adj_observed_AP-MS.csv
+/adj_observed_Y2H.csv
 
 # Distribution / packaging
 .idea/
