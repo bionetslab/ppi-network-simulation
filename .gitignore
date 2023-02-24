@@ -12,7 +12,7 @@ __pycache__/
 # C extensions
 *.so
 
-/output_results/AP-MS/adj_observed_AP-MS.csv
+/adj_observed_AP-MS.csv
 
 # Distribution / packaging
 .idea/
