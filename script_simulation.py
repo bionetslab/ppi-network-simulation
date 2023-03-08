@@ -44,7 +44,7 @@ for p in par:
 print('parameters files done!')
 
 
-###### version with Parallel #####
+###### functions that runs the simulation with Parallel #####
 
 def simulation_forParallel(m,f,nsg):
   """Runs the simulation for several combinations of parameters.
@@ -78,13 +78,17 @@ def simulation_forParallel(m,f,nsg):
     results4json.append(tuple(temp))
   json.dump(results4json, codecs.open(d+'/all_results_'+parameters.test_method + '_'+ 'accTh' + str(parameters.acceptance_threshold).replace('.','') + '_FPR'+ str(parameters.false_positive_rate).replace('.','') + '_FNR'+ str(parameters.false_negative_rate).replace('.','')+'.json', 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=4)
 
-#------------------------------------------
+#--------------------------------------------------------------------------------------------
+# run simulations for different methods (AP-MS and Y2H), FPR, FNR and acceptance_threshold
 
+# create the output_results folder 
 if os.path.exists('output_results') == False:
   os.mkdir('output_results')
 
 method = ['AP-MS','Y2H']
+# set the number of simulations for generator
 nsg = 50
+# set the number of cores to use for the parallel processing
 jobs = 8
 
 start_time = time.time()
