@@ -1,7 +1,8 @@
 # PPI network simulation under study bias
 
-Simulates the measurement process of observed PPI networks under study bias as described in the manuscript 
-"Emergence of power law distributions in protein-protein interaction networks through study bias".
+Simulates the measurement process of observed PPI networks under study bias as described in: 
+
+Blumenthal DB, Lucchetta M, Kleist L, Fekete SP, List M, Schaefer MH. Emergence of power-law distributions in protein-protein interaction networks through study bias. eLife. 2024;13:e99951. doi: [10.7554/eLife.99951](https://doi.org/10.7554/eLife.99951).
 
 - To generate the plots shown in the manuscript, execute the workflow in the notebook `plot_results.ipynb`.
 - To reproduce the results of the simulation study, run the `script_simulation.py` as follows: 
